@@ -57,6 +57,23 @@ class DataTransformer:
         except Exception as e:
             logging.info("Exception occured at Data Transformation step")
             raise CustomException(e,sys)
+    def transform_date_column(self,date,format):
+        date=pd.to_datetime(date,format=format)
+        Year=date.dt.year
+        Month=date.dt.month
+        Day=date.dt.day
+        return Year,Month,Day
+    
+    def transform_time_column(self,time):
+        Hour=time.str.split(':').str[0]
+        Minutes=time.str.split(':').str[1]
+        Hour=Hour.astype(float)
+        Minutes=Minutes.astype(float)
+        f=lambda x : int(x*24) if x<1 else x
+        Hour=Hour.apply(f)
+        return Hour,Minutes
+
+
 
     def initiate_data_transformation(self,train_data_path,test_data_path):
         logging.info("Data Transformation initiated")
@@ -68,6 +85,23 @@ class DataTransformer:
                 cols=json.load(f)
             dropped_cols=cols['dropped_cols']
             feature_col=cols['target_col']
+            date_cols=cols['date_cols']
+            time_cols=cols['time_cols']
+
+            for column in date_cols:
+                Year_train,Month_train,Day_train=self.transform_date_column(train_data[column],format='%d-%m-%Y')
+                Year_test,Month_test,Day_test=self.transform_date_column(train_data[column],format='%d-%m-%Y')
+
+                train_data[column+'_Year'],train_data[column+'_Month'],train_data[column+'_Day']=Year_train,Month_train,Day_train
+                test_data[column+'_Year'],test_data[column+'_Month'],test_data[column+'_Day']=Year_test,Month_test,Day_test
+
+            for column in time_cols:
+                Hours_train,Minutes_train=self.transform_time_column(train_data[column])
+                Hours_test,Minutes_test=self.transform_time_column(test_data[column])
+
+                train_data[column+'_Hours'],train_data[column+'_Minutes']=Hours_train,Minutes_train
+                test_data[column+'_Hours'],test_data[column+'_Minutes']=Hours_test,Minutes_test
+
 
             train_data.drop(dropped_cols,axis=1,inplace=True)
             test_data.drop(dropped_cols,axis=1,inplace=True)

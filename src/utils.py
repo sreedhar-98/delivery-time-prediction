@@ -3,6 +3,7 @@ import pickle
 from src.exception import CustomException
 import sys
 from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
+from sklearn.model_selection import GridSearchCV
 import numpy as np
 import pandas as pd
 from src.logger import logging
@@ -18,7 +19,7 @@ def save_object(file_path,obj):
      except Exception as e:
         raise CustomException(e, sys)
      
-def train_evaluate_model(models_dict,train_arr,test_arr):
+def train_evaluate_model(models_dict,hyperparameters_dict,train_arr,test_arr):
     X_train,X_test,y_train,y_test=train_arr[:,:-1],test_arr[:,:-1],train_arr[:,-1],test_arr[:,-1]
     metrics=['r2 score','Root Mean Squared Error','Mean Absolute Error']
     cols=pd.MultiIndex.from_product([['Training Dataset','Test Dataset'],metrics])
@@ -27,10 +28,18 @@ def train_evaluate_model(models_dict,train_arr,test_arr):
       logging.info("Model Training Started")
       for model in models_dict:
          trainer=models_dict[model]
-         trainer.fit(X_train,y_train)
+         params=hyperparameters_dict[model]
+
+         gs=GridSearchCV(estimator=trainer,param_grid=params,cv=5,scoring='r2',n_jobs=-1)
+         gs.fit(X_train,y_train)
+
+         tuned_trainer=gs.best_estimator_
+
+         models_dict[model]=tuned_trainer
+
         
-         y_pred_train=trainer.predict(X_train)
-         y_pred_test=trainer.predict(X_test)
+         y_pred_train=tuned_trainer.predict(X_train)
+         y_pred_test=tuned_trainer.predict(X_test)
 
          mse_train=mean_squared_error(y_train,y_pred_train)
          mse_test=mean_squared_error(y_test,y_pred_test)
@@ -53,7 +62,7 @@ def train_evaluate_model(models_dict,train_arr,test_arr):
          report.loc[model,('Training Dataset','r2 score')]=r2_score_train
          report.loc[model,('Test Dataset','r2 score')]=r2_score_test
     
-      return report
+      return report,models_dict
     except Exception as e:
        logging.info("Error occured while training the model")
        raise CustomException(e,sys)      

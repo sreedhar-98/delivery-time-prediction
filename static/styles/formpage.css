@@ -1,0 +1,74 @@
+/* Reset default form styles */
+form {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-family: Arial, sans-serif;
+}
+
+/* Set form width and center align */
+form {
+    width: 400px;
+    margin: 0 auto;
+}
+
+/* Style form elements */
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+form input[type="number"],
+form select {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form select {
+    height: 34px;
+    background-color: #f7f7f7;
+}
+
+/* Style submit button */
+form input[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Add some colors to form elements */
+form label,
+form input,
+form select {
+    transition: background-color 0.3s ease;
+}
+
+form input[type="number"]:focus,
+form select:focus {
+    background-color: #eaeaea;
+}
+
+form input[type="submit"] {
+    background-color: #28a745;
+}
+
+form input[type="submit"]:hover {
+    background-color: #1c7430;
+}
