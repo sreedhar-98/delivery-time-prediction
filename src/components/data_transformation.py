@@ -83,7 +83,7 @@ class DataTransformer:
             X_train_arr=preprocessor.fit_transform(X_train)
             X_test_arr=preprocessor.transform(X_test)
             
-            #print(preprocessor.get_feature_names_out())
+            print(preprocessor.get_feature_names_out())
             
             train_arr=np.c_[X_train_arr,np.array(y_train)]
             test_arr=np.c_[X_test_arr,np.array(y_test)]

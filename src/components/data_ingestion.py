@@ -18,7 +18,7 @@ class DataConfig:
     def initiateIngestion(self):
         logging.info("Data Ingestion initiated")
         try:
-            raw_data=pd.read_csv(os.path.join('notebooks\datasets\delivery-time-prediction-cleaned.csv'))
+            raw_data=pd.read_csv(os.path.join('notebooks\datasets\delivery-time-prediction.csv'))
             logging.info("Raw data read as pandas DataFrame")
             os.makedirs(os.path.dirname(self.ingestionConfig.raw_data_path),exist_ok=True)
             raw_data.to_csv(self.ingestionConfig.raw_data_path,index=False)
