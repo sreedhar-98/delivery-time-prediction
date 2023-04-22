@@ -20,7 +20,7 @@ def predict_datapoint():
             Delivery_person_Ratings=float(request.form.get('Delivery_person_Ratings')),
             Restaurant_latitude=float(request.form.get('Restaurant_latitude')),
             Restaurant_longitude=float(request.form.get('Restaurant_longitude')),
-            Vehicle_condition=int(request.form.get('Vehicle_condition')),
+            Vehicle_condition=float(request.form.get('Vehicle_condition')),
             multiple_deliveries=float(request.form.get('multiple_deliveries')),
             Order_Date_Day=float(request.form.get('Order_Date_Day')),
             Time_Orderd_Hours=float(request.form.get('Time_Orderd_Hours')),
