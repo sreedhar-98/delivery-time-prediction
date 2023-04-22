@@ -86,11 +86,11 @@ jobs:
 
       - name: Stop and remove container if running
         run: |
-          docker ps -q --filter "name=diamondprice" | grep -q . && docker stop diamondprice && docker rm -fv diamondprice || echo "No running container found."
+          docker ps -q --filter "name=delivery-time-prediction" | grep -q . && docker stop delivery-time-prediction && docker rm -fv delivery-time-prediction || echo "No running container found."
 
       - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --ipc="host" --name=diamondprice -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}' ${{secrets.AWS_ECR_LOGIN_URI}}
+          docker run -d -p 8080:8080 --ipc="host" --name=delivery-time-prediction -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}' ${{secrets.AWS_ECR_LOGIN_URI}}
         
       - name: Clean previous images and containers
         run: |
