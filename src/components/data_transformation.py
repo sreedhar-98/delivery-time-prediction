@@ -12,6 +12,8 @@ import numpy as np
 from src.utils import save_object
 import json
 import re
+from src.CustomTransformers.DateSplitter import DateSplitter
+from src.CustomTransformers.TimeSplitter import TimeSplitter
 
 @dataclass
 class TransformationConfig:
@@ -30,9 +32,13 @@ class DataTransformer:
             
             numerical_cols=cols['numerical_cols']
             categorical_cols=cols['categorical_cols']
+            date_cols=cols['date_cols']
+            time_cols=cols['time_cols']
 
             Weather_conditions=encoding['Weather_conditions']
             Road_traffic_density=encoding['Road_traffic_density']
+            Type_of_order=encoding['Type_of_Order']
+            Type_of_vehicle=encoding['Type_of_vehicle']
             Festival=encoding['Festival']
             City=encoding['City']
             
@@ -42,36 +48,41 @@ class DataTransformer:
                 ('scaler',StandardScaler())
                 ]
             )
+
+            date_pipeline=Pipeline(
+                steps=[
+                ('date_splitter',DateSplitter(format='%d-%m-%Y')),
+                ('imputer',SimpleImputer(strategy='most_frequent')),
+                ('scaler',StandardScaler())
+                ]
+            )
+
+            time_pipeline=Pipeline(
+                steps=[
+                ('time_splitter',TimeSplitter()),
+                ('imputer',SimpleImputer(strategy='most_frequent')),
+                ('scaler',StandardScaler())
+                ]
+            )
+
+
             cat_pipeline=Pipeline(
                 steps=[
                 ('imputer',SimpleImputer(strategy='most_frequent')),
-                ('ordinal_encoder',OrdinalEncoder(categories=[Weather_conditions,Road_traffic_density,Festival,City])),
+                ('ordinal_encoder',OrdinalEncoder(categories=[Weather_conditions,Road_traffic_density,Type_of_order,Type_of_vehicle,Festival,City])),
                 ('scaler',StandardScaler())
                 ]
             )
             preprocessor=ColumnTransformer([
                 ('num_pipeline',num_pipeline,numerical_cols),
+                ('date_pipeline',date_pipeline,date_cols),
+                ('time_pipeline',time_pipeline,time_cols)
                 ('cat_pipeline',cat_pipeline,categorical_cols)
                 ],verbose_feature_names_out=False)  
             return preprocessor
         except Exception as e:
             logging.info("Exception occured at Data Transformation step")
             raise CustomException(e,sys)
-    def transform_date_column(self,date,format):
-        date=pd.to_datetime(date,format=format)
-        Year=date.dt.year
-        Month=date.dt.month
-        Day=date.dt.day
-        return Year,Month,Day
-    
-    def transform_time_column(self,time):
-        Hour=time.str.split(':').str[0]
-        Minutes=time.str.split(':').str[1]
-        Hour=Hour.astype(float)
-        Minutes=Minutes.astype(float)
-        f=lambda x : int(x*24) if x<1 else x
-        Hour=Hour.apply(f)
-        return Hour,Minutes
 
 
 
@@ -85,26 +96,13 @@ class DataTransformer:
                 cols=json.load(f)
             dropped_cols=cols['dropped_cols']
             feature_col=cols['target_col']
-            date_cols=cols['date_cols']
-            time_cols=cols['time_cols']
 
-            for column in date_cols:
-                Year_train,Month_train,Day_train=self.transform_date_column(train_data[column],format='%d-%m-%Y')
-                Year_test,Month_test,Day_test=self.transform_date_column(train_data[column],format='%d-%m-%Y')
-
-                train_data[column+'_Year'],train_data[column+'_Month'],train_data[column+'_Day']=Year_train,Month_train,Day_train
-                test_data[column+'_Year'],test_data[column+'_Month'],test_data[column+'_Day']=Year_test,Month_test,Day_test
-
-            for column in time_cols:
-                Hours_train,Minutes_train=self.transform_time_column(train_data[column])
-                Hours_test,Minutes_test=self.transform_time_column(test_data[column])
-
-                train_data[column+'_Hours'],train_data[column+'_Minutes']=Hours_train,Minutes_train
-                test_data[column+'_Hours'],test_data[column+'_Minutes']=Hours_test,Minutes_test
-
-
-            train_data.drop(dropped_cols,axis=1,inplace=True)
-            test_data.drop(dropped_cols,axis=1,inplace=True)
+            #Deleting the columns which are not a part of preprocessing
+            for column in train_data.columns:
+                if column in dropped_cols:
+                    train_data.drop(column,axis=1,inplace=True)
+                    test_data.drop(column,axis=1,inplace=True)
+                    dropped_cols.remove(column)
 
             X_train=train_data.drop(feature_col,axis=1)
             y_train=train_data[feature_col]
@@ -116,8 +114,11 @@ class DataTransformer:
             logging.info("Applying preprocessing")
             X_train_arr=preprocessor.fit_transform(X_train)
             X_test_arr=preprocessor.transform(X_test)
+
+            X_train.drop(dropped_cols,axis=1,inplace=True)
+            X_test.drop(dropped_cols,axis=1,inplace=True)
             
-            print(preprocessor.get_feature_names_out())
+            #print(preprocessor.get_feature_names_out())
             
             train_arr=np.c_[X_train_arr,np.array(y_train)]
             test_arr=np.c_[X_test_arr,np.array(y_test)]

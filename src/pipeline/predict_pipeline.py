@@ -84,7 +84,7 @@ class CustomData:
             logging.info("Exception occured in prediction pipeline Custom Data class")
             raise CustomException(e,sys)
 
-
+#Code to test the predict pipeline
 # pp=predictPipeline()
 # cd=CustomData(32,4.2,25.3210,81.2564,0,2.0,14,17,15,30,"Sandstorms","Medium","No","Metropolitian")
 # df=cd.get_data_as_df()

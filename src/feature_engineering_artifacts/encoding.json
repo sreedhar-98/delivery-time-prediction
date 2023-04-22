@@ -1,1 +1,1 @@
-{"Weather_conditions": ["Sunny", "Cloudy", "Fog", "Windy", "Stormy", "Sandstorms"], "Road_traffic_density": ["Low", "Medium", "High", "Jam"], "Festival": ["No", "Yes"], "City": ["Semi-Urban", "Urban", "Metropolitian"]}
+{"Weather_conditions": ["Sunny", "Cloudy", "Fog", "Windy", "Stormy", "Sandstorms"], "Road_traffic_density": ["Low", "Medium", "High", "Jam"], "Type_of_order": ["Snack", "Drinks", "Meal", "Buffet"], "Type_of_vehicle": ["bicycle", "motorcycle", "electric_scooter", "scooter"], "Festival": ["No", "Yes"], "City": ["Semi-Urban", "Urban", "Metropolitian"]}
