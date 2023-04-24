@@ -39,7 +39,7 @@ This project follows a pipeline approach with the following steps:
 
 5. **Flask Application**: The predict pipeline is integrated with a Flask application, which provides a user-friendly interface for users to input order details and receive predicted delivery time as output.
 
-![Machine Learning Workflow Diagram](ml-engineering.jpeg)
+![Machine Learning Workflow Diagram](ml-engineering.jpg)
 
 ## CI/CD Pipeline
 
