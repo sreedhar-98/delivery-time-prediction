@@ -25,17 +25,15 @@
         <label for="multiple_deliveries">Multiple Deliveries</label>
         <input type="number" id="multiple_deliveries" name="multiple_deliveries" step="0.1" required>
 
-        <label for="Order_Date_Day">Specify the day of the order (1-31)</label>
-        <input type="number" id="Order_Date_Day" name="Order_Date_Day" min="1" max="31" required>
+        <label for="Order_Date">Order Date (dd-mm-yyyy)</label>
+        <input type="date" id="Order_Date" name="Order_Date" required>
 
-        <label for="Time_Orderd_Hours">Order Time(Hour) (0-23)</label>
-        <input type="number" id="Time_Orderd_Hours" name="Time_Orderd_Hours" min="0" max="23" required>
+        <label for="Time_Orderd">Order Time (HH:mm)</label>
+        <input type="time" id="Time_Orderd" name="Time_Orderd" required>
 
-        <label for="Time_Orderd_Minutes">Order Time(Minutes) (0-59)</label>
-        <input type="number" id="Time_Orderd_Minutes" name="Time_Orderd_Minutes" min="0" max="59" required>
-
-        <label for="Time_Order_picked_Minutes">Order Pickup Time(Minutes) (0-59)</label>
-        <input type="number" id="Time_Order_picked_Minutes" name="Time_Order_picked_Minutes" min="0" max="59" required>
+        <label for="Time_Order_picked">Order Pickup Time (HH:mm)</label>
+        <input type="time" id="Time_Order_picked" name="Time_Order_picked" required>
+        
 
         <label for="Weather_conditions">Weather Conditions</label>
         <select id="Weather_conditions" name="Weather_conditions" required>

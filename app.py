@@ -1,5 +1,6 @@
 from flask import Flask,request,render_template,jsonify
 from src.pipeline.predict_pipeline import CustomData,predictPipeline
+import pandas as pd
 
 application=Flask(__name__)
 
@@ -22,18 +23,19 @@ def predict_datapoint():
             Restaurant_longitude=float(request.form.get('Restaurant_longitude')),
             Vehicle_condition=float(request.form.get('Vehicle_condition')),
             multiple_deliveries=float(request.form.get('multiple_deliveries')),
-            Order_Date_Day=float(request.form.get('Order_Date_Day')),
-            Time_Orderd_Hours=float(request.form.get('Time_Orderd_Hours')),
-            Time_Orderd_Minutes=float(request.form.get('Time_Orderd_Minutes')),
-            Time_Order_picked_Minutes=float(request.form.get('Time_Order_picked_Minutes')),
+            Order_Date=request.form.get('Order_Date'),
+            Time_Orderd=request.form.get('Time_Orderd'),
+            Time_Order_picked=request.form.get('Time_Order_picked'),
             Weather_conditions=str(request.form.get('Weather_conditions')),
             Road_traffic_density=str(request.form.get('Road_traffic_density')),
             Festival=str(request.form.get('Festival')),
             City=str(request.form.get('City'))
         )
         data_df=data.get_data_as_df()
-        #print(data_df)
+        data_df['Order_Date']=pd.to_datetime(data_df['Order_Date'],format='%Y-%m-%d')
+        data_df['Order_Date']=data_df['Order_Date'].dt.strftime('%d-%m-%Y')
         pred_pipeline=predictPipeline()
+        #print(data_df.columns)
         pred_val=pred_pipeline.predict(data_df)
         return render_template('resultpage.html',final_result=pred_val)
     

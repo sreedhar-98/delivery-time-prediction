@@ -37,8 +37,6 @@ class DataTransformer:
 
             Weather_conditions=encoding['Weather_conditions']
             Road_traffic_density=encoding['Road_traffic_density']
-            Type_of_order=encoding['Type_of_Order']
-            Type_of_vehicle=encoding['Type_of_vehicle']
             Festival=encoding['Festival']
             City=encoding['City']
             
@@ -69,14 +67,14 @@ class DataTransformer:
             cat_pipeline=Pipeline(
                 steps=[
                 ('imputer',SimpleImputer(strategy='most_frequent')),
-                ('ordinal_encoder',OrdinalEncoder(categories=[Weather_conditions,Road_traffic_density,Type_of_order,Type_of_vehicle,Festival,City])),
+                ('ordinal_encoder',OrdinalEncoder(categories=[Weather_conditions,Road_traffic_density,Festival,City])),
                 ('scaler',StandardScaler())
                 ]
             )
             preprocessor=ColumnTransformer([
                 ('num_pipeline',num_pipeline,numerical_cols),
                 ('date_pipeline',date_pipeline,date_cols),
-                ('time_pipeline',time_pipeline,time_cols)
+                ('time_pipeline',time_pipeline,time_cols),
                 ('cat_pipeline',cat_pipeline,categorical_cols)
                 ],verbose_feature_names_out=False)  
             return preprocessor
@@ -94,15 +92,8 @@ class DataTransformer:
             
             with open('src/feature_engineering_artifacts/features_dict.json','r') as f:
                 cols=json.load(f)
-            dropped_cols=cols['dropped_cols']
             feature_col=cols['target_col']
-
-            #Deleting the columns which are not a part of preprocessing
-            for column in train_data.columns:
-                if column in dropped_cols:
-                    train_data.drop(column,axis=1,inplace=True)
-                    test_data.drop(column,axis=1,inplace=True)
-                    dropped_cols.remove(column)
+            dropped_cols=cols['dropped_cols']
 
             X_train=train_data.drop(feature_col,axis=1)
             y_train=train_data[feature_col]
@@ -112,16 +103,16 @@ class DataTransformer:
 
             preprocessor=self.get_transform_object()
             logging.info("Applying preprocessing")
-            X_train_arr=preprocessor.fit_transform(X_train)
-            X_test_arr=preprocessor.transform(X_test)
+            X_train=pd.DataFrame(preprocessor.fit_transform(X_train),columns=preprocessor.get_feature_names_out())
+            X_test=pd.DataFrame(preprocessor.transform(X_test),columns=preprocessor.get_feature_names_out())
 
             X_train.drop(dropped_cols,axis=1,inplace=True)
             X_test.drop(dropped_cols,axis=1,inplace=True)
             
             #print(preprocessor.get_feature_names_out())
             
-            train_arr=np.c_[X_train_arr,np.array(y_train)]
-            test_arr=np.c_[X_test_arr,np.array(y_test)]
+            train_arr=np.c_[X_train.to_numpy(),np.array(y_train)]
+            test_arr=np.c_[X_test.to_numpy(),np.array(y_test)]
 
             save_object(file_path=self.transformer_path.transformer_path,obj=preprocessor)
             logging.info("Pickle file saved successfully")
