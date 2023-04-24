@@ -59,7 +59,7 @@ To set up a similar CI/CD pipeline for your own ML project, you can refer to the
 - [Docker documentation](https://docs.docker.com/)
 - [Amazon ECR documentation](https://aws.amazon.com/ecr/)
 
-For detailed configuration examples and code snippets, please refer to our [workflow file](.github/workflows/main.yml) in the `.github/workflows` directory.
+For detailed configuration examples and code snippets, please refer to our [workflow file](.github/workflows/main.yaml) in the `.github/workflows` directory.
 
 ![CI/CD Pipeline Diagram](ci_cd_pipeline_diagram.png)
 
